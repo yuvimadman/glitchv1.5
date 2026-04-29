@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browsers</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #eee;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    h1 {
+      margin-bottom: 2rem;
+    }
+    .browser-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 900px;
+      width: 100%;
+      margin-bottom: 2rem;
+      transition: opacity 0.3s ease;
+    }
+    .browser-card {
+      background: #1f1f1f;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+      padding: 1.5rem;
+      cursor: pointer;
+      text-align: center;
+      width: 250px;
+      transition: background 0.3s, transform 0.3s;
+      user-select: none;
+    }
+    .browser-card:hover {
+      background: #2a2a2a;
+      transform: translateY(-5px);
+    }
+    .browser-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #61dafb;
+    }
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: white;
+      display: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="page-title">Choose a Browser</h1>
+  <div class="browser-container" id="browserContainer">
+    <div class="browser-card" onclick="loadBrowser('https://s3.amazonaws.com/lsrelay-a/index.html#/search')">
+      <div class="browser-title">Doge Static</div>
+      <div>Open Doge Static Browser</div>
+    </div>
+    <div class="browser-card" onclick="loadBrowser('https://s3.amazonaws.com/bullubg/index.html')">
+      <div class="browser-title">Fern</div>
+      <div>Open Fern Browser</div>
+    </div>
+    <div class="browser-card" onclick="loadBrowser('https://255node.info.north-kazakhstan.su.cdn.cloudflare.net/')">
+      <div class="browser-title">Daydream</div>
+      <div>Open Daydream Browser</div>
+    </div>
+    <div class="browser-card" onclick="loadBrowser('https://the-nexora-project.cdn.net/')">
+      <div class="browser-title">Nexora</div>
+      <div>Open Nexora Browser</div>
+    </div>
+    <div class="browser-card" onclick="loadBrowser('https://ultrahub9432.b-cdn.net/')">
+      <div class="browser-title">Infamous</div>
+      <div>Open Infamous Browser</div>
+    </div>
+  </div>
+  <iframe id="browserFrame" title="Browser Frame"></iframe>
+
+<script>
+  const iframe = document.getElementById('browserFrame');
+  const container = document.getElementById('browserContainer');
+  const pageTitle = document.getElementById('page-title');
+
+  function loadBrowser(url) {
+    iframe.src = url;
+    iframe.style.display = 'block';
+    container.style.display = 'none';
+    pageTitle.style.display = 'none';
+  }
+  
+  // Close iframe fullscreen when ESC is pressed
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && iframe.style.display === 'block') {
+      iframe.src = '';
+      iframe.style.display = 'none';
+      container.style.display = 'flex';
+      pageTitle.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
