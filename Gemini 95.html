@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Windows 95 Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/genai": "https://esm.sh/@google/genai@0.7.0",
+          "@tailwindcss/browser": "https://esm.sh/@tailwindcss/browser@^4.1.3"
+        }
+      }
+    </script>
+    <style>body{font-family:Inter,sans-serif;background-color:teal;margin:0;padding:0;overflow:hidden;color:#000}.desktop{width:100vw;height:100vh;overflow:hidden;position:relative;cursor:default;padding-top:10px;padding-left:10px}.icon{display:inline-flex;flex-direction:column;align-items:center;margin:15px;cursor:pointer;user-select:none;width:100px;vertical-align:top;text-align:center}.icon img{width:48px;height:48px;margin-bottom:8px}.icon span{color:#fff;font-size:.75rem;text-shadow:1px 1px 2px rgba(0,0,0,.5);white-space:normal;word-wrap:break-word;max-width:100%;text-align:center}.window{background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;box-shadow:2px 2px 2px #0006;position:absolute;top:50px;left:100px;width:320px;height:240px;display:none;flex-direction:column;z-index:10;box-sizing:border-box}.window.active{display:flex;z-index:20}.window.resizable{resize:both;overflow:hidden;min-width:200px;min-height:150px}.window-titlebar{background-color:navy;color:#fff;padding:3px 4px;font-size:.8rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;cursor:grab;height:22px;box-sizing:border-box}.window-titlebar:active{cursor:grabbing}.window-title{margin-right:auto;margin-left:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 60px)}.window-controls{display:flex;gap:3px}.window-control-button{width:16px;height:16px;background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;display:flex;justify-content:center;align-items:center;cursor:pointer;font-family:Times New Roman,serif;font-size:.8rem;font-weight:700;line-height:0;padding:0;color:#000}.window-control-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none}.window-content{padding:2px;font-size:.9rem;flex-grow:1;overflow:auto;background-color:#fff;border:1px inset #808080;margin:2px;position:relative;display:flex;flex-direction:column}.window-content textarea{width:100%;height:100%;border:none;outline:none;resize:none;font-family:Courier New,Courier,monospace;font-size:.9rem;padding:5px;box-sizing:border-box}.window-content iframe{width:100%;height:100%;border:none;display:block}#dosbox-container,#doom-container,#wolf3d-container{width:100%;height:100%;position:relative}.jsdos{position:relative;width:100%!important;height:100%!important;background-color:#000}.jsdos canvas{width:100%!important;height:100%!important;object-fit:contain}#doom .window-content iframe,#wolf3d .window-content iframe{width:100%;height:100%;border:none;display:block;background-color:#000}.gemini-chat-content{background-color:#fff;box-sizing:border-box;padding:2px}.gemini-chat-history{flex-grow:1;overflow-y:auto;border:1px inset #808080;padding:5px;margin-bottom:5px;background-color:#fff;font-size:.8rem}.gemini-chat-history p{margin:3px 0;word-wrap:break-word}.gemini-chat-history .user-message{font-weight:700;color:#00f}.gemini-chat-history .gemini-message{color:green}.gemini-chat-history .error-message{color:red;font-style:italic}.gemini-chat-input-area{display:flex;flex-shrink:0;border-top:1px solid #808080;background-color:silver;padding:5px;margin:-2px}.gemini-chat-input{flex-grow:1;border:1px solid #000000;padding:3px;font-size:.8rem;margin-right:5px;background-color:#fff;box-shadow:inset 1px 1px 1px gray}.gemini-chat-send{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 8px;font-size:.8rem;cursor:pointer}.gemini-chat-send:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 7px 1px 9px}.start-menu{background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;box-shadow:2px 2px 3px #0006;position:absolute;bottom:36px;left:0;width:180px;display:none;flex-direction:column;z-index:50;padding:2px}.start-menu.active{display:flex}.start-menu-item{padding:5px 10px 5px 25px;font-size:.8rem;color:#000;cursor:pointer;white-space:nowrap;position:relative}.start-menu-item:hover{background-color:navy;color:#fff}#taskbar{background-color:silver;border-top:2px solid #FFFFFF;position:fixed;bottom:0;left:0;width:100%;height:36px;display:flex;align-items:center;padding:3px;z-index:40;box-sizing:border-box}#start-button{background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;padding:2px 8px;margin-right:5px;cursor:pointer;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:4px;height:30px;box-sizing:border-box}#start-button:active{border-top:2px solid #000000;border-left:2px solid #000000;border-right:2px solid #FFFFFF;border-bottom:2px solid #FFFFFF;padding:3px 7px 1px 9px}#start-button img{width:20px;height:20px}#taskbar-apps{display:flex;flex-grow:1;height:100%;align-items:center;overflow:hidden}.taskbar-app{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;padding:2px 6px;margin:0 2px;cursor:pointer;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;height:28px;display:flex;align-items:center;gap:4px;box-sizing:border-box;flex-shrink:0;box-shadow:inset 1px 1px #ffffff80}.taskbar-app img{width:16px;height:16px}.taskbar-app.active,.taskbar-app:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;background-color:#e0e0e0;box-shadow:none;padding:3px 5px 1px 7px}.notepad-menu{display:flex;padding:3px;background-color:silver;border-bottom:1px solid #808080;height:30px;flex-shrink:0}.notepad-story-button{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 8px;font-size:.8rem;cursor:pointer;height:24px}.notepad-story-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 7px 1px 9px}.notepad-textarea{font-family:Courier New,Courier,monospace;font-size:.9rem;padding:5px;box-sizing:border-box;background-color:#fff;border:1px solid #808080;flex-grow:1;width:100%;resize:none}#chrome .window-content{padding:0;margin:0;border:none}.browser-toolbar{background-color:silver;padding:5px;border-bottom:1px solid #808080;display:flex;align-items:center;height:30px;flex-shrink:0}.address-bar-container{display:flex;flex-grow:1;align-items:center}.browser-address-bar{flex-grow:1;height:22px;border:1px inset #808080;background-color:#fff;padding:2px 5px;font-family:Times New Roman,Times,serif;font-size:.8rem}.browser-go-button{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 8px;font-size:.8rem;margin-left:5px;height:22px;cursor:pointer}.browser-go-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 7px 1px 9px}.browser-viewport{position:relative;flex-grow:1;background-color:#fff;overflow:hidden}.browser-loading{position:absolute;top:0;left:0;width:100%;height:100%;background-color:silver;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:1rem;font-family:Times New Roman,Times,serif;z-index:5;display:none}#paint-assistant{position:fixed;bottom:50px;right:20px;width:100px;display:none;flex-direction:column;align-items:center;z-index:-1;transition:opacity .3s ease-in-out}#paint-assistant.visible{display:flex;z-index:1}.assistant-image{width:80px;height:auto;display:block}.assistant-bubble{background-color:#ffffe1;border:1px solid black;padding:8px 12px;border-radius:5px;font-size:.75rem;font-family:Comic Sans MS,cursive,sans-serif;color:#000;margin-bottom:8px;position:relative;box-shadow:2px 2px 3px #0003;max-width:200px;word-wrap:break-word;text-align:center}.assistant-bubble:after{content:"";position:absolute;bottom:-8px;left:50%;transform:translate(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #FFFFE1}.assistant-bubble:before{content:"";position:absolute;bottom:-10px;left:50%;transform:translate(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid black;z-index:-1}#paint .window-content{padding:0;margin:0;background-color:silver;border:none}.paint-toolbar{background-color:silver;padding:4px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #808080;height:30px;flex-shrink:0}.paint-colors,.paint-brush-sizes{display:flex;gap:3px;border:1px inset #808080;padding:2px}.paint-color-swatch{width:20px;height:20px;border:1px solid black;cursor:pointer;font-size:.7rem;font-weight:700;display:flex;justify-content:center;align-items:center;color:#000;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80}.paint-color-swatch.active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none}.paint-size-button,.paint-clear-button{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 6px;font-size:.8rem;cursor:pointer;min-width:25px;text-align:center}.paint-size-button.active,.paint-size-button:active,.paint-clear-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 5px 1px 7px}#paint-canvas{border-top:1px solid #808080;flex-grow:1;background-color:#fff;cursor:crosshair;display:block}#minesweeper .window-content{padding:0;margin:0;background-color:silver;border:none}.minesweeper-controls{display:flex;justify-content:space-between;align-items:center;padding:5px;background-color:silver;border-bottom:2px solid #808080;border-right:2px solid #808080;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;margin:5px;flex-shrink:0}.minesweeper-info{background-color:#000;color:red;font-family:Courier New,Courier,monospace;font-weight:700;font-size:1.2rem;padding:2px 5px;border:1px inset #808080;min-width:60px;text-align:center}.minesweeper-reset-button{width:30px;height:30px;font-size:1.2rem;display:flex;justify-content:center;align-items:center;background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;cursor:pointer}.minesweeper-reset-button:active{border-top:2px solid #000000;border-left:2px solid #000000;border-right:2px solid #FFFFFF;border-bottom:2px solid #FFFFFF}.minesweeper-grid-container{flex-grow:1;padding:5px;display:flex;justify-content:center;align-items:center;border:2px inset #808080;margin:0 5px 5px;overflow:auto;background-color:silver}.minesweeper-grid{display:grid;border:1px solid #808080}.minesweeper-cell{width:20px;height:20px;background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #808080;border-bottom:2px solid #808080;display:flex;justify-content:center;align-items:center;font-size:.9rem;font-weight:700;cursor:pointer;user-select:none}.minesweeper-cell.revealed{background-color:#bdbdbd;border:1px solid #808080;cursor:default}.minesweeper-cell.exploded{background-color:red}.minesweeper-cell[data-number="1"]{color:#00f}.minesweeper-cell[data-number="2"]{color:green}.minesweeper-cell[data-number="3"]{color:red}.minesweeper-cell[data-number="4"]{color:navy}.minesweeper-cell[data-number="5"]{color:maroon}.minesweeper-cell[data-number="6"]{color:teal}.minesweeper-cell[data-number="7"]{color:#000}.minesweeper-cell[data-number="8"]{color:gray}.minesweeper-hint-area{display:flex;align-items:center;justify-content:space-between;padding:0 8px 5px;background-color:silver;flex-shrink:0}.minesweeper-hint-button{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 8px;font-size:.8rem;cursor:pointer;height:24px}.minesweeper-hint-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 7px 1px 9px}.minesweeper-commentary{font-size:.75rem;font-family:Comic Sans MS,cursive,sans-serif;color:navy;text-align:right;flex-grow:1;margin-left:10px;height:auto;min-height:24px;line-height:1.3;word-wrap:break-word}.window-icon{display:inline-flex;flex-direction:column;align-items:center;width:80px;padding:10px;margin:5px;text-align:center;cursor:pointer;user-select:none;vertical-align:top}.window-icon:hover,.window-icon:hover span{background-color:navy;color:#fff}.window-icon img{width:32px;height:32px;margin-bottom:5px}.window-icon span{font-size:.7rem;color:#000;max-height:2.4em;overflow:hidden;line-height:1.2em}#imageViewer .window-content{padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background-color:gray;border:none;margin:0}#imageViewer img{max-width:100%;max-height:100%;object-fit:contain}#mediaPlayer .window-content{padding:0;margin:0;background-color:silver;border:none;display:flex;flex-direction:column}.media-player-url-bar{display:flex;padding:5px;background-color:silver;border-bottom:1px solid #808080;flex-shrink:0}.media-player-input{flex-grow:1;height:22px;border:1px inset #808080;background-color:#fff;padding:2px 5px;font-family:Times New Roman,Times,serif;font-size:.8rem;margin-right:5px}.media-player-load-button{background-color:silver;border-top:1px solid #FFFFFF;border-left:1px solid #FFFFFF;border-right:1px solid #000000;border-bottom:1px solid #000000;box-shadow:inset 1px 1px #ffffff80;padding:2px 8px;font-size:.8rem;height:22px;cursor:pointer}.media-player-load-button:active{border-top:1px solid #000000;border-left:1px solid #000000;border-right:1px solid #FFFFFF;border-bottom:1px solid #FFFFFF;box-shadow:none;padding:3px 7px 1px 9px}.media-player-video-container{flex-grow:1;background-color:#000;display:flex;justify-content:center;align-items:center;overflow:hidden;margin:2px;border:2px inset #808080}.media-player-status-message{padding:20px;text-align:center;color:#ccc;font-size:.9rem}#youtube-player-mediaPlayer{width:100%;height:100%}#youtube-player-mediaPlayer iframe{display:block;width:100%;height:100%;border:none}.media-player-controls-panel{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background-color:silver;border-top:1px solid #FFFFFF;flex-shrink:0;height:40px}.media-player-buttons-group{display:flex;align-items:center}.media-player-control-button{background-color:silver;border-top:2px solid #FFFFFF;border-left:2px solid #FFFFFF;border-right:2px solid #000000;border-bottom:2px solid #000000;font-family:Segoe UI Symbol,Symbola,system-ui;font-size:.9rem;color:#000;width:30px;height:26px;margin:0 2px;cursor:pointer;display:flex;justify-content:center;align-items:center;padding:0;line-height:1}.media-player-control-button:active{border-top:2px solid #000000;border-left:2px solid #000000;border-right:2px solid #FFFFFF;border-bottom:2px solid #FFFFFF;padding:1px 0 0 1px}.media-player-control-button:disabled{color:gray;cursor:default;opacity:.7}.media-player-progress-bar-container-placeholder{flex-grow:1;height:12px;border:1px inset #808080;background-color:#a0a0a0;margin:0 10px;padding:1px}.media-player-progress-bar-placeholder{width:30%;height:100%;background-color:navy;border-right:1px solid #0000CL}.media-player-volume-placeholder{display:flex;align-items:center;font-size:.9rem}.media-player-volume-placeholder span{margin-right:4px}.media-player-volume-slider-placeholder{width:60px;height:8px;background-color:#a0a0a0;border:1px inset #808080}#myComputer .window-content,#notepad .window-content,#doom .window-content,#gemini .window-content,#imageViewer .window-content{flex-direction:column}#doom-content{display:flex;flex-grow:1;background-color:#000}#paint .window-content,#minesweeper .window-content,#mediaPlayer .window-content,#chrome .window-content,#doom-content,#imageViewer .window-content{padding:0;margin:0;border:none}</style>
+</head>
+  <body>
+    <div class="desktop" id="desktop">
+      <!-- Desktop Icons -->
+      <div class="icon" data-app="myComputer">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/mycomputer.png"
+          alt="My Computer"
+          style="width: 70px; height: 50px"
+        />
+        <span>My Gemtop</span>
+      </div>
+      <div class="icon" data-app="chrome">
+        <img src="https://storage.googleapis.com/gemini-95-icons/chrome-icon-2.png" alt="Chrome" />
+        <span>Chrome</span>
+      </div>
+      <div class="icon" data-app="notepad">
+        <img src="https://storage.googleapis.com/gemini-95-icons/GemNotes.png" alt="Notepad" />
+        <span>GemNotes</span>
+      </div>
+      <div class="icon" data-app="paint">
+        <img src="https://storage.googleapis.com/gemini-95-icons/gempaint.png" alt="Paint" />
+        <span>GemPaint</span>
+      </div>
+      <div class="icon" data-app="doom">
+        <img
+          src="https://64.media.tumblr.com/1d89dfa76381e5c14210a2149c83790d/7a15f84c681c1cf9-c1/s540x810/86985984be99d5591e0cbc0dea6f05ffa3136dac.png"
+          alt="Doom II"
+        />
+        <span>Doom II</span>
+      </div>
+      <div class="icon" data-app="gemini">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/GeminiChatRetro.png"
+          alt="Gemini App"
+        />
+        <span>Gemini App</span>
+      </div>
+      <div class="icon" data-app="minesweeper">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/gemsweeper.png"
+          alt="Minesweeper"
+          style="width: 48px; height: 48px"
+        />
+        <span>GemSweeper</span>
+      </div>
+      <div class="icon" data-app="mediaPlayer">
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/ytmediaplayer.png"
+          alt="Media Player"
+          style="width: 48px; height: 48px"
+        />
+        <span>GemPlayer</span>
+      </div>
+
+
+      <!-- Windows -->
+      <div class="window resizable" id="myComputer">
+        <div class="window-titlebar">
+          <span class="window-title">My Gemtop</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content" style="background-color: white">
+          <div id="c-drive-icon" class="window-icon">
+            <img src="https://storage.googleapis.com/gemini-95-icons/cdrive.png" alt="C Drive" />
+            <span>C:</span>
+          </div>
+          <div id="c-drive-content" style="display: none">
+            <div id="secret-image-icon" class="window-icon">
+              <img
+                src="https://win98icons.alexmeub.com/icons/png/paint_file-0.png"
+                alt="Secret File"
+              />
+              <span>dontshowthis<br />toanyone.jpg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="chrome">
+        <div class="window-titlebar">
+          <span class="window-title">Chrome</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="browser-toolbar">
+            <div class="address-bar-container">
+              <input
+                type="text"
+                class="browser-address-bar"
+                placeholder="Enter a website URL..."
+                value="https://www.google.com"
+              />
+              <button class="browser-go-button">Go!</button>
+            </div>
+          </div>
+          <div class="browser-viewport">
+            <iframe
+              id="browser-frame"
+              src="https://web.archive.org/web/19990428171538/http://google.com/"
+              width="100%"
+              height="100%"
+            ></iframe>
+            <div class="browser-loading">
+              Generating website...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="notepad">
+        <div class="window-titlebar">
+          <span class="window-title">GemNotes</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="notepad-menu">
+            <button class="notepad-story-button">Generate Story</button>
+          </div>
+          <textarea
+            class="notepad-textarea"
+            style="
+              width: 100%;
+              height: calc(100% - 30px);
+              border: none;
+              outline: none;
+              resize: none;
+              background-color: white;
+              border: 1px solid #808080;
+            "
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="window resizable" id="paint">
+        <div class="window-titlebar">
+          <span class="window-title">GemPaint</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div
+          class="window-content"
+          style="
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+            background-color: #c0c0c0;
+          "
+        >
+          <div class="paint-toolbar">
+            <div class="paint-colors">
+              <button
+                class="paint-color-swatch"
+                data-color="black"
+                style="background-color: black"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="red"
+                style="background-color: red"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="blue"
+                style="background-color: blue"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="green"
+                style="background-color: green"
+              ></button>
+              <button
+                class="paint-color-swatch"
+                data-color="yellow"
+                style="background-color: yellow"
+              ></button>
+              <button class="paint-color-swatch" data-color="white" style="background-color: white">
+                E
+              </button>
+            </div>
+            <div class="paint-brush-sizes">
+              <button class="paint-size-button" data-size="2">S</button>
+              <button class="paint-size-button" data-size="5">M</button>
+              <button class="paint-size-button" data-size="10">L</button>
+            </div>
+            <button class="paint-clear-button">Clear</button>
+          </div>
+          <canvas
+            id="paint-canvas"
+            style="flex-grow: 1; background-color: white; cursor: crosshair; display: block"
+          ></canvas>
+        </div>
+      </div>
+
+      <div class="window resizable" id="doom">
+        <div class="window-titlebar">
+          <span class="window-title">Doom II</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content" id="doom-content">
+        </div>
+      </div>
+
+      <div class="window resizable" id="gemini">
+        <div class="window-titlebar">
+          <span class="window-title">Gemini App</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content gemini-chat-content">
+          <div class="gemini-chat-history">
+          </div>
+          <div class="gemini-chat-input-area">
+            <input type="text" class="gemini-chat-input" placeholder="Type your message..." />
+            <button class="gemini-chat-send">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="minesweeper" style="width: 400px; height: 450px">
+        <div class="window-titlebar">
+          <span class="window-title">GemSweeper</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div
+          class="window-content minesweeper-content"
+          style="
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+            background-color: #c0c0c0;
+          "
+        >
+          <div class="minesweeper-controls">
+            <div class="minesweeper-info minesweeper-flag-count">🚩 10</div>
+            <button class="minesweeper-reset-button">🙂</button>
+            <div class="minesweeper-info minesweeper-timer">⏱️ 0</div>
+          </div>
+          <div class="minesweeper-hint-area">
+            <button class="minesweeper-hint-button">💡 Hint</button>
+            <div class="minesweeper-commentary">Let's play! Click a square to start.</div>
+          </div>
+          <div class="minesweeper-grid-container">
+            <div class="minesweeper-grid" id="minesweeper-board">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="window resizable" id="imageViewer" style="width: 350px; height: 300px">
+        <div class="window-titlebar">
+          <span class="window-title" id="image-viewer-title">Image Viewer</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div
+          class="window-content image-viewer-content"
+          style="
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #808080;
+          "
+        >
+          <img
+            id="image-viewer-img"
+            src=""
+            alt="Image"
+            style="max-width: 100%; max-height: 100%; object-fit: contain"
+          />
+        </div>
+      </div>
+
+      <div class="window resizable" id="mediaPlayer" style="width: 520px; height: 500px;">
+        <div class="window-titlebar">
+          <span class="window-title">GemPlayer</span>
+          <div class="window-controls">
+            <div class="window-minimize window-control-button">−</div>
+            <div class="window-close window-control-button">✕</div>
+          </div>
+        </div>
+        <div class="window-content media-player-content">
+          <div class="media-player-url-bar">
+            <input type="text" class="media-player-input" placeholder="Enter YouTube Video URL or ID" />
+            <button class="media-player-load-button">Load</button>
+          </div>
+          <div class="media-player-video-container">
+            <div id="youtube-player-mediaPlayer">
+                 <p class="media-player-status-message">Loading GemPlayer...</p>
+            </div>
+          </div>
+          <div class="media-player-controls-panel">
+            <div class="media-player-buttons-group">
+                <button class="media-player-control-button" id="media-player-play" title="Play">▶</button>
+                <button class="media-player-control-button" id="media-player-pause" title="Pause">❚❚</button>
+                <button class="media-player-control-button" id="media-player-stop" title="Stop">■</button>
+            </div>
+            <div class="media-player-progress-bar-container-placeholder">
+                <div class="media-player-progress-bar-placeholder"></div>
+            </div>
+            <div class="media-player-volume-placeholder">
+                <span>🔊</span>
+                <div class="media-player-volume-slider-placeholder"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Start Menu -->
+      <div class="start-menu" id="start-menu">
+        <div class="start-menu-item" data-app="myComputer">My Gemtop</div>
+        <div class="start-menu-item" data-app="chrome">Chrome</div>
+        <div class="start-menu-item" data-app="notepad">GemNotes</div>
+        <div class="start-menu-item" data-app="paint">GemPaint</div>
+        <div class="start-menu-item" data-app="doom">Doom II</div>
+        <div class="start-menu-item" data-app="gemini">Gemini App</div>
+        <div class="start-menu-item" data-app="minesweeper">GemSweeper</div>
+        <div class="start-menu-item" data-app="mediaPlayer">GemPlayer</div>
+      </div>
+
+      <!-- Taskbar -->
+      <div id="taskbar">
+        <button id="start-button">
+          <img
+            src="https://storage.googleapis.com/gemini-95-icons/start-gemini.png"
+            alt="Start"
+            style="width: 80px; height: 70px"
+          />
+        </button>
+        <div id="taskbar-apps">
+        </div>
+      </div>
+
+      <div id="paint-assistant">
+        <div class="assistant-bubble">Thinking...</div>
+        <img
+          src="https://storage.googleapis.com/gemini-95-icons/robot-assistant.gif"
+          alt="Paint Assistant"
+          class="assistant-image"
+        />
+      </div>
+    </div>
+    <script type="module">/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */import"@tailwindcss/browser";const Y={},ye=document.getElementById("desktop"),ne=document.querySelectorAll(".window"),Z=document.querySelectorAll(".icon"),A=document.getElementById("start-menu"),J=document.getElementById("start-button"),Q=document.getElementById("taskbar-apps"),W=document.getElementById("paint-assistant"),I=W?.querySelector(".assistant-bubble");let k=null,O=20;const C=new Map;let x=null,F=null;const _=new Map;let T=null,U=0,G=0,q=!1,B=10,w={rows:9,cols:9},V=!0;const S={};let X=!1,R=null;const ee="WXuK6gekU1Y";function $(t){if(k===t)return;if(k){k.classList.remove("active");const s=k.id;C.has(s)&&C.get(s)?.taskbarButton.classList.remove("active")}O++,t.style.zIndex=O.toString(),t.classList.add("active"),k=t;const e=t.id;C.has(e)&&C.get(e)?.taskbarButton.classList.add("active"),(e==="doom"||e==="wolf3d")&&Y[e]&&document.getElementById(`${e}-container`)?.querySelector("canvas")?.focus()}async function N(t){const e=document.getElementById(t);if(!e){console.error(`Window element not found for app: ${t}`);return}if(C.has(t)){$(e),e.style.display="flex",e.classList.add("active");return}e.style.display="flex",e.classList.add("active"),$(e);const s=document.createElement("div");s.classList.add("taskbar-app"),s.dataset.appName=t;let r="",n=t;const l=re(t);if(l){const a=l.querySelector("img"),o=l.querySelector("span");a&&(r=a.src),o&&(n=o.textContent||t)}else switch(t){case"myComputer":r="https://storage.googleapis.com/gemini-95-icons/mycomputer.png",n="My Gemtop";break;case"chrome":r="https://storage.googleapis.com/gemini-95-icons/chrome-icon-2.png",n="Chrome";break;case"notepad":r="https://storage.googleapis.com/gemini-95-icons/GemNotes.png",n="GemNotes";break;case"paint":r="https://storage.googleapis.com/gemini-95-icons/gempaint.png",n="GemPaint";break;case"doom":r="https://64.media.tumblr.com/1d89dfa76381e5c14210a2149c83790d/7a15f84c681c1cf9-c1/s540x810/86985984be99d5591e0cbc0dea6f05ffa3136dac.png",n="Doom II";break;case"gemini":r="https://storage.googleapis.com/gemini-95-icons/GeminiChatRetro.png",n="Gemini App";break;case"minesweeper":r="https://storage.googleapis.com/gemini-95-icons/gemsweeper.png",n="GemSweeper";break;case"imageViewer":r="https://win98icons.alexmeub.com/icons/png/display_properties-4.png",n="Image Viewer";break;case"mediaPlayer":r="https://storage.googleapis.com/gemini-95-icons/ytmediaplayer.png",n="GemPlayer";break}if(r){const a=document.createElement("img");a.src=r,a.alt=n,s.appendChild(a)}if(s.appendChild(document.createTextNode(n)),s.addEventListener("click",()=>{e===k&&e.style.display!=="none"?te(t):(e.style.display="flex",$(e))}),Q.appendChild(s),C.set(t,{windowEl:e,taskbarButton:s}),s.classList.add("active"),t==="chrome")ae(e);else if(t==="notepad")await se(e);else if(t==="paint")ce(e),W&&W.classList.add("visible"),I&&(I.textContent="Warming up my judging circuits..."),F&&clearInterval(F),F=window.setInterval(le,15e3);else if(t==="doom"&&!Y.doom){const a=document.getElementById("doom-content");a&&(a.innerHTML='<iframe src="https://js-dos.com/games/doom.exe.html" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>',Y.doom={initialized:!0})}else t==="gemini"?await oe(e):t==="minesweeper"?de(e):t==="myComputer"?ue(e):t==="mediaPlayer"&&await ge(e)}function ie(t){const e=C.get(t);if(!e)return;const{windowEl:s,taskbarButton:r}=e;if(s.style.display="none",s.classList.remove("active"),r.remove(),C.delete(t),Y[t]){console.log(`Cleaning up ${t} instance (iframe approach)`);const n=document.getElementById(`${t}-content`);n&&(n.innerHTML=""),delete Y[t]}if(t==="paint"){F&&(clearInterval(F),F=null,W&&W.classList.remove("visible"));const n=e.windowEl.querySelector(".window-content");n&&_.has(n)&&(_.get(n)?.disconnect(),_.delete(n))}if(t==="minesweeper"&&T&&(clearInterval(T),T=null),t==="mediaPlayer"){const n=S[t];if(n){try{typeof n.stopVideo=="function"&&n.stopVideo(),typeof n.destroy=="function"&&n.destroy()}catch(c){console.warn("Error stopping/destroying media player:",c)}delete S[t],console.log("Destroyed YouTube player for mediaPlayer.")}const l=`youtube-player-${t}`,a=document.getElementById(l);a&&(a.innerHTML='<p class="media-player-status-message">Player closed. Enter a YouTube URL to load.</p>');const o=document.getElementById("mediaPlayer");if(o){const c=o.querySelector("#media-player-play"),L=o.querySelector("#media-player-pause"),f=o.querySelector("#media-player-stop");c&&(c.disabled=!0),L&&(L.disabled=!0),f&&(f.disabled=!0)}}if(k===s){k=null;let n=null,l=-1;C.forEach(a=>{const o=parseInt(a.windowEl.style.zIndex||"0",10);o>l&&(l=o,n=a.windowEl)}),n&&$(n)}}function te(t){const e=C.get(t);if(!e)return;const{windowEl:s,taskbarButton:r}=e;if(s.style.display="none",s.classList.remove("active"),r.classList.remove("active"),k===s){k=null;let n=null,l=0;C.forEach((a,o)=>{if(a.windowEl.style.display!=="none"){const c=parseInt(a.windowEl.style.zIndex||"0",10);c>l&&(l=c,n=o)}}),n&&$(C.get(n).windowEl)}}async function oe(t){const e=t.querySelector(".gemini-chat-history"),s=t.querySelector(".gemini-chat-input"),r=t.querySelector(".gemini-chat-send");if(!e||!s||!r){console.error("Gemini chat elements not found in window:",t.id);return}function n(a,o,c=""){const L=document.createElement("p");c&&L.classList.add(c),L.textContent=o,a.appendChild(L),a.scrollTop=a.scrollHeight}n(e,"Initializing AI...","system-message");const l=async()=>{if(!x){if(!await j("initGeminiChat")){n(e,"Error: Failed to initialize AI.","error-message");return}const c=Array.from(e.children).find(L=>L.textContent?.includes("Initializing AI..."));c&&c.remove(),n(e,"AI Ready.","system-message")}const a=s.value.trim();if(a){n(e,`You: ${a}`,"user-message"),s.value="",s.disabled=!0,r.disabled=!0;try{const c=await x.chats.create({model:"gemini-2.5-flash",history:[]}).sendMessageStream({message:a});let L="";n(e,"Gemini: ","gemini-message");const f=e.lastElementChild;for await(const h of c){const M=h.text||"";L+=M,f&&(f.textContent+=M,e.scrollTop=e.scrollHeight)}}catch(o){n(e,`Error: ${o.message||"Failed to get response."}`,"error-message")}finally{s.disabled=!1,r.disabled=!1,s.focus()}}};r.onclick=l,s.onkeydown=a=>{a.key==="Enter"&&!a.shiftKey&&(a.preventDefault(),l())},s.disabled=!1,r.disabled=!1,s.focus()}async function se(t){const e=t.querySelector(".notepad-textarea"),s=t.querySelector(".notepad-story-button");!e||!s||s.addEventListener("click",async()=>{const r=e.value;e.value=r+`
+Generating story... Please wait...
+`,e.scrollTop=e.scrollHeight,s.disabled=!0,s.textContent="Working...";try{if(!x&&!await j("initNotepadStory"))throw new Error("Failed to initialize Gemini API.");const l=await x.models.generateContentStream({model:"gemini-2.5-flash",contents:"Write me a short creative story (250-300 words) with an unexpected twist ending. Make it engaging and suitable for all ages."});e.value=r+`
+`;for await(const a of l)e.value+=a.text||"",e.scrollTop=e.scrollHeight;e.value+=`
+`}catch(n){e.value=r+`
+Error: `+(n.message||"Failed to generate story.")+`
+`}finally{s.disabled=!1,s.textContent="Generate Story",e.scrollTop=e.scrollHeight}})}function ae(t){const e=t.querySelector(".browser-address-bar"),s=t.querySelector(".browser-go-button"),r=t.querySelector("#browser-frame"),n=t.querySelector(".browser-loading"),l="https://www.soundjay.com/communication/dial-up-modem-01.mp3";let a=null;if(!e||!s||!r||!n)return;async function o(c){!c.startsWith("http://")&&!c.startsWith("https://")&&(c="https://"+c);try{const f=new URL(c).hostname;n.innerHTML=`
+                <style>
+                    .dialup-animation .dot {
+                        animation: dialup-blink 1.4s infinite both;
+                    }
+                    .dialup-animation .dot:nth-child(2) {
+                        animation-delay: 0.2s;
+                    }
+                    .dialup-animation .dot:nth-child(3) {
+                        animation-delay: 0.4s;
+                    }
+                    @keyframes dialup-blink {
+                        0%, 80%, 100% { opacity: 0; }
+                        40% { opacity: 1; }
+                    }
+                    .browser-loading p { margin: 5px 0; }
+                    .browser-loading .small-text { font-size: 0.8em; color: #aaa; }
+                </style>
+                <img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/000/948/341/datas/original.gif"/>
+                <p>Connecting to ${f}<span class="dialup-animation"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span></p>
+                <!-- Sound will play via JS -->
+            `,n.style.display="flex";try{a||(a=new Audio(l),a.loop=!0),await a.play()}catch(h){console.error("Dial-up sound error:",h)}try{if(!x&&!await j("initAiBrowser")){r.src="data:text/plain;charset=utf-8,AI Init Error",n.style.display="none";return}const h=`
+                Create a complete 90s-style website for the domain "${f}".
+                MUST include: 1 relevant image, garish 90s styling (neon, comic sans, tables), content specific to "${f}", scrolling marquee, retro emoji/ascii, blinking text, visitor counter (9000+), "Under Construction" signs. Fun, humorous, 1996 feel. Image MUST match theme. No modern design.
+                `,M=await x.models.generateContent({model:"gemini-2.5-flash-image",contents:[{role:"user",parts:[{text:h}]}],config:{temperature:.9,responseModalities:["TEXT","IMAGE"]}});let d="";const v=[];if(M.candidates?.[0]?.content)for(const u of M.candidates[0].content.parts)u.text?d+=u.text.replace(/```html|```/g,"").trim():u.inlineData?.data&&v.push(`data:${u.inlineData.mimeType||"image/png"};base64,${u.inlineData.data}`);d.includes("<html")||(d=`<!DOCTYPE html><html><head><title>${f}</title><style>body{font-family:"Comic Sans MS";background:lime;color:blue;}marquee{background:yellow;color:red;}img{max-width:80%; display:block; margin:10px auto; border: 3px ridge gray;}</style></head><body><marquee>Welcome to ${f}!</marquee><h1>${f}</h1><div>${d}</div></body></html>`),v.length>0&&(d.includes('<img src="data:')||(d=d.replace(/(<\/h1>)/i,`$1
+<img src="${v[0]}" alt="Site Image">`))),r.src="data:text/html;charset=utf-8,"+encodeURIComponent(d),e.value=c}catch(h){r.src="data:text/html;charset=utf-8,"+encodeURIComponent(`<html><body>Error generating site: ${h.message}</body></html>`)}finally{n.style.display="none",a&&(a.pause(),a.currentTime=0)}}catch{alert("Invalid URL"),n.style.display="none"}}s.addEventListener("click",()=>o(e.value)),e.addEventListener("keydown",c=>{c.key==="Enter"&&o(e.value)}),e.addEventListener("click",()=>e.select())}Z.forEach(t=>{t.addEventListener("click",()=>{const e=t.getAttribute("data-app");e&&(N(e),A.classList.remove("active"))})}),document.querySelectorAll(".start-menu-item").forEach(t=>{t.addEventListener("click",()=>{const e=t.getAttribute("data-app");e&&N(e),A.classList.remove("active")})}),J.addEventListener("click",t=>{t.stopPropagation(),A.classList.toggle("active"),A.classList.contains("active")&&(O++,A.style.zIndex=O.toString())}),ne.forEach(t=>{const e=t.querySelector(".window-titlebar"),s=t.querySelector(".window-close"),r=t.querySelector(".window-minimize");if(t.addEventListener("mousedown",()=>$(t),!0),s&&s.addEventListener("click",n=>{n.stopPropagation(),ie(t.id)}),r&&r.addEventListener("click",n=>{n.stopPropagation(),te(t.id)}),e){let n=!1,l,a;const o=f=>{if(!(f.target===e||e.contains(f.target))||f.target.closest(".window-control-button")){n=!1;return}n=!0,$(t);const h=t.getBoundingClientRect();l=f.clientX-h.left,a=f.clientY-h.top,e.style.cursor="grabbing",document.addEventListener("mousemove",c),document.addEventListener("mouseup",L,{once:!0})},c=f=>{if(!n)return;let h=f.clientX-l,M=f.clientY-a;const d=Q.parentElement?.offsetHeight??36,v=window.innerWidth-t.offsetWidth,u=window.innerHeight-t.offsetHeight-d,H=-(t.offsetWidth-40),z=window.innerWidth-40;h=Math.max(H,Math.min(h,z)),M=Math.max(0,Math.min(M,u)),t.style.left=`${h}px`,t.style.top=`${M}px`},L=()=>{n&&(n=!1,e.style.cursor="grab",document.removeEventListener("mousemove",c))};e.addEventListener("mousedown",o)}if(!C.has(t.id)){const n=Math.random()*(window.innerHeight/4)+20,l=Math.random()*(window.innerWidth/3)+20;t.style.top=`${n}px`,t.style.left=`${l}px`}}),document.addEventListener("click",t=>{A.classList.contains("active")&&!A.contains(t.target)&&!J.contains(t.target)&&A.classList.remove("active")});function re(t){return Array.from(Z).find(e=>e.dataset.app===t)}console.log("Gemini 95 Simulator Initialized (TS)");async function le(){const t=document.getElementById("paint");if(!t||t.style.display==="none")return;const e=t.querySelector("#paint-canvas");if(!e){I&&(I.textContent="Error: Canvas not found!");return}if(!x&&!await j("critiquePaintDrawing")){I&&(I.textContent="Error: AI init failed!");return}try{I&&(I.textContent="Analyzing...");const r=e.toDataURL("image/jpeg",.8).split(",")[1];if(!r)throw new Error("Failed to get base64 data.");const n="Critique this drawing with witty sarcasm (1-2 sentences).",l={inlineData:{data:r,mimeType:"image/jpeg"}},o=(await x.models.generateContent({model:"gemini-2.5-pro-exp-03-25",contents:[{role:"user",parts:[{text:n},l]}]}))?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||"Is this art?";I&&(I.textContent=o)}catch(s){I&&(I.textContent=`Critique Error: ${s.message}`)}}function ce(t){const e=t.querySelector("#paint-canvas"),s=t.querySelector(".paint-toolbar"),r=t.querySelector(".window-content"),n=t.querySelectorAll(".paint-color-swatch"),l=t.querySelectorAll(".paint-size-button"),a=t.querySelector(".paint-clear-button");if(!e||!s||!r||!a)return;const o=e.getContext("2d");if(!o)return;let c=!1,L=0,f=0;o.strokeStyle="black",o.lineWidth=2,o.lineJoin="round",o.lineCap="round";let h=o.strokeStyle,M=o.lineWidth;function d(){const b=r.getBoundingClientRect(),E=s.offsetHeight,i=Math.floor(b.width),p=Math.floor(b.height-E);e.width===i&&e.height===p&&i>0&&p>0||(e.width=i>0?i:1,e.height=p>0?p:1,o.fillStyle="white",o.fillRect(0,0,e.width,e.height),o.strokeStyle=h,o.lineWidth=M,o.lineJoin="round",o.lineCap="round")}const v=new ResizeObserver(d);v.observe(r),_.set(r,v),d();function u(b,E){const i=b.getBoundingClientRect();let p,m;return E instanceof MouseEvent?(p=E.clientX,m=E.clientY):(p=E.touches[0].clientX,m=E.touches[0].clientY),{x:p-i.left,y:m-i.top}}function H(b){c=!0;const E=u(e,b);[L,f]=[E.x,E.y],o.beginPath(),o.moveTo(L,f)}function z(b){if(!c)return;b.preventDefault();const E=u(e,b);o.lineTo(E.x,E.y),o.stroke(),[L,f]=[E.x,E.y]}function P(){c&&(c=!1)}e.addEventListener("mousedown",H),e.addEventListener("mousemove",z),e.addEventListener("mouseup",P),e.addEventListener("mouseleave",P),e.addEventListener("touchstart",H,{passive:!1}),e.addEventListener("touchmove",z,{passive:!1}),e.addEventListener("touchend",P),e.addEventListener("touchcancel",P),n.forEach(b=>{b.addEventListener("click",()=>{if(o.strokeStyle=b.dataset.color||"black",h=o.strokeStyle,n.forEach(E=>E.classList.remove("active")),b.classList.add("active"),b.dataset.color==="white"){const E=Array.from(l).find(i=>i.dataset.size==="10");E&&(o.lineWidth=parseInt(E.dataset.size||"10",10),M=o.lineWidth,l.forEach(i=>i.classList.remove("active")),E.classList.add("active"))}else{const E=Array.from(l).find(i=>i.classList.contains("active"));E&&(o.lineWidth=parseInt(E.dataset.size||"2",10),M=o.lineWidth)}})}),l.forEach(b=>{b.addEventListener("click",()=>{o.lineWidth=parseInt(b.dataset.size||"2",10),M=o.lineWidth,l.forEach(i=>i.classList.remove("active")),b.classList.add("active"),Array.from(n).find(i=>i.dataset.color==="white")?.classList.contains("active")||Array.from(n).some(i=>i.classList.contains("active"))||(Array.from(n).find(p=>p.dataset.color==="black")?.classList.add("active"),o.strokeStyle="black",h=o.strokeStyle)})}),a.addEventListener("click",()=>{o.fillStyle="white",o.fillRect(0,0,e.width,e.height)}),t.querySelector('.paint-color-swatch[data-color="black"]')?.classList.add("active"),t.querySelector('.paint-size-button[data-size="2"]')?.classList.add("active")}function de(t){const e=t.querySelector("#minesweeper-board"),s=t.querySelector(".minesweeper-flag-count"),r=t.querySelector(".minesweeper-timer"),n=t.querySelector(".minesweeper-reset-button"),l=t.querySelector(".minesweeper-hint-button"),a=t.querySelector(".minesweeper-commentary");if(!e||!s||!r||!n||!l||!a)return;let o=[];function c(){T&&clearInterval(T),T=null,U=0,G=0,q=!1,V=!0,B=10,w={rows:9,cols:9},r.textContent="\u23F1\uFE0F 0",s.textContent=`\u{1F6A9} ${B}`,n.textContent="\u{1F642}",a.textContent="Let's play! Click a square.",L()}function L(){e.innerHTML="",o=[],e.style.gridTemplateColumns=`repeat(${w.cols}, 20px)`,e.style.gridTemplateRows=`repeat(${w.rows}, 20px)`;for(let i=0;i<w.rows;i++){const p=[];for(let m=0;m<w.cols;m++){const y=document.createElement("div");y.classList.add("minesweeper-cell");const g={isMine:!1,isRevealed:!1,isFlagged:!1,adjacentMines:0,element:y,row:i,col:m};y.addEventListener("click",()=>M(g)),y.addEventListener("contextmenu",D=>{D.preventDefault(),d(g)}),p.push(g),e.appendChild(y)}o.push(p)}}function f(i,p){let m=0;for(;m<B;){const y=Math.floor(Math.random()*w.rows),g=Math.floor(Math.random()*w.cols);y===i&&g===p||o[y][g].isMine||(o[y][g].isMine=!0,m++)}for(let y=0;y<w.rows;y++)for(let g=0;g<w.cols;g++)o[y][g].isMine||(o[y][g].adjacentMines=h(y,g))}function h(i,p){let m=0;for(let y=-1;y<=1;y++)for(let g=-1;g<=1;g++){if(y===0&&g===0)continue;const D=i+y,K=p+g;D>=0&&D<w.rows&&K>=0&&K<w.cols&&o[D][K].isMine&&m++}return m}function M(i){q||i.isRevealed||i.isFlagged||(V&&!T&&(f(i.row,i.col),V=!1,u()),i.isMine?z(i):(v(i),P()))}function d(i){q||i.isRevealed||V&&!T||(i.isFlagged=!i.isFlagged,i.element.textContent=i.isFlagged?"\u{1F6A9}":"",G+=i.isFlagged?1:-1,H(),P())}function v(i){if(!(i.isRevealed||i.isFlagged||i.isMine))if(i.isRevealed=!0,i.element.classList.add("revealed"),i.element.textContent="",i.adjacentMines>0)i.element.textContent=i.adjacentMines.toString(),i.element.dataset.number=i.adjacentMines.toString();else for(let p=-1;p<=1;p++)for(let m=-1;m<=1;m++){if(p===0&&m===0)continue;const y=i.row+p,g=i.col+m;if(y>=0&&y<w.rows&&g>=0&&g<w.cols){const D=o[y][g];!D.isRevealed&&!D.isFlagged&&v(D)}}}function u(){T||(U=0,r.textContent="\u23F1\uFE0F 0",T=window.setInterval(()=>{U++,r.textContent=`\u23F1\uFE0F ${U}`},1e3))}function H(){s.textContent=`\u{1F6A9} ${B-G}`}function z(i){q=!0,T&&clearInterval(T),T=null,n.textContent="\u{1F635}",o.forEach(p=>p.forEach(m=>{m.isMine&&(m.element.classList.add("mine","revealed"),m.element.textContent="\u{1F4A3}"),!m.isMine&&m.isFlagged&&(m.element.textContent="\u274C")})),i.element.classList.add("exploded"),i.element.textContent="\u{1F4A5}"}function P(){if(q)return;let i=0,p=0;o.forEach(y=>y.forEach(g=>{g.isRevealed&&!g.isMine&&i++,g.isFlagged&&g.isMine&&p++}));const m=w.rows*w.cols-B;(i===m||p===B&&G===B)&&(q=!0,T&&clearInterval(T),T=null,n.textContent="\u{1F60E}",i===m&&(o.forEach(y=>y.forEach(g=>{g.isMine&&!g.isFlagged&&(g.isFlagged=!0,g.element.textContent="\u{1F6A9}",G++)})),H()))}function b(){let i=`Flags: ${B-G}, Time: ${U}s
+Grid (H=Hidden,F=Flag,Num=Mines):
+`;return o.forEach(p=>{p.forEach(m=>{m.isFlagged?i+=" F ":m.isRevealed?m.adjacentMines>0?i+=` ${m.adjacentMines} `:i+=" _ ":i+=" H "}),i+=`
+`}),i}async function E(){if(q||V){a.textContent="Click a square first!";return}if(l.disabled=!0,l.textContent="\u{1F914}",a.textContent="Thinking...",!x&&!await j("getAiHint")){a.textContent="AI Init Error.",l.disabled=!1,l.textContent="\u{1F4A1} Hint";return}try{const p=`Minesweeper state:
+${b()}
+Short, witty hint (1-2 sentences) for a safe move or dangerous area. Don't reveal exact mines unless certain. Hint:`,y=(await x.models.generateContent({model:"gemini-2.5-flash",contents:[{role:"user",parts:[{text:p}]}],config:{temperature:.7}}))?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()||"Try clicking somewhere?";a.textContent=y}catch(i){a.textContent=`Hint Error: ${i.message}`}finally{l.disabled=!1,l.textContent="\u{1F4A1} Hint"}}n.addEventListener("click",c),l.addEventListener("click",E),c()}function ue(t){const e=t.querySelector("#c-drive-icon"),s=t.querySelector("#c-drive-content"),r=t.querySelector("#secret-image-icon");!e||!s||!r||(e.addEventListener("click",()=>{e.style.display="none",s.style.display="block"}),r.addEventListener("click",()=>{const n=document.getElementById("imageViewer"),l=document.getElementById("image-viewer-img"),a=document.getElementById("image-viewer-title");if(!n||!l||!a){alert("Image Viewer corrupted!");return}l.src="https://storage.googleapis.com/gemini-95-icons/%40ammaar%2B%40olacombe.png",l.alt="dontshowthistoanyone.jpg",a.textContent="dontshowthistoanyone.jpg - Image Viewer",N("imageViewer")}),e.style.display="inline-flex",s.style.display="none")}function me(){return X?Promise.resolve():R||(R=new Promise((t,e)=>{if(window.YT&&window.YT.Player){X=!0,t();return}const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api",s.onerror=n=>{console.error("Failed to load YouTube API script:",n),R=null,e(new Error("YouTube API script load failed"))};const r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(s,r),window.onYouTubeIframeAPIReady=()=>{X=!0,R=null,t()},setTimeout(()=>{X||(window.onYouTubeIframeAPIReady&&(window.onYouTubeIframeAPIReady=null),R=null,e(new Error("YouTube API load timeout")))},1e4)}),R)}function fe(t){if(!t)return null;if(/^[a-zA-Z0-9_-]{11}$/.test(t))return t;const e=/^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11}).*/,s=t.match(e);return s&&s[1]?s[1]:null}async function ge(t){const e=t.id,s=t.querySelector(".media-player-input"),r=t.querySelector(".media-player-load-button"),n=`youtube-player-${e}`,l=t.querySelector(`#${n}`),a=t.querySelector("#media-player-play"),o=t.querySelector("#media-player-pause"),c=t.querySelector("#media-player-stop");if(!s||!r||!l||!a||!o||!c){console.error("Media Player elements not found for",e),l&&(l.innerHTML='<p class="media-player-status-message" style="color:red;">Error: Player UI missing.</p>');return}const L=d=>{const v=window.YT?.PlayerState;if(!v){a.disabled=!0,o.disabled=!0,c.disabled=!0;return}const u=d!==void 0?d:S[e]&&typeof S[e].getPlayerState=="function"?S[e].getPlayerState():v.UNSTARTED;a.disabled=u===v.PLAYING||u===v.BUFFERING,o.disabled=u!==v.PLAYING&&u!==v.BUFFERING,c.disabled=u===v.ENDED||u===v.UNSTARTED||u===-1};L(-1);const f=(d,v=!1)=>{const u=S[e];if(u){try{typeof u.destroy=="function"&&u.destroy()}catch(H){console.warn("Minor error destroying player:",H)}delete S[e]}l.innerHTML=`<p class="media-player-status-message" style="color:${v?"red":"#ccc"};">${d}</p>`,L(-1)},h=l.querySelector(".media-player-status-message");h&&(h.textContent="Connecting to YouTube...");try{await me(),h&&(h.textContent="YouTube API Ready. Loading default video...")}catch(d){f(`Error: Could not load YouTube Player API. ${d.message}`,!0);return}const M=d=>{const v=S[e];if(v)try{typeof v.destroy=="function"&&v.destroy()}catch(u){console.warn("Minor error destroying previous player:",u)}l.innerHTML="";try{S[e]=new YT.Player(n,{height:"100%",width:"100%",videoId:d,playerVars:{playsinline:1,autoplay:1,controls:0,modestbranding:1,rel:0,fs:0,origin:window.location.origin},events:{onReady:u=>{L(u.target.getPlayerState())},onError:u=>{f({2:"Invalid video ID.",5:"HTML5 Player error.",100:"Video not found/private.",101:"Playback disallowed.",150:"Playback disallowed."}[u.data]||`Playback Error (Code: ${u.data})`,!0)},onStateChange:u=>{L(u.data)}}})}catch(u){f(`Failed to create video player: ${u.message}`,!0)}};r.addEventListener("click",()=>{const d=s.value.trim(),v=fe(d);v?(f("Loading video..."),M(v)):f("Invalid YouTube URL or Video ID.",!0)}),a.addEventListener("click",()=>{const d=S[e];d&&typeof d.playVideo=="function"&&d.playVideo()}),o.addEventListener("click",()=>{const d=S[e];d&&typeof d.pauseVideo=="function"&&d.pauseVideo()}),c.addEventListener("click",()=>{const d=S[e];d&&typeof d.stopVideo=="function"&&(d.stopVideo(),L(window.YT?.PlayerState?.ENDED))}),ee&&(h&&(h.textContent="Loading default video..."),M(ee))}async function j(t){if(x)return!0;try{const s=(await import("@google/genai")).GoogleGenAI;if(typeof s!="function")throw new Error("GoogleGenAI constructor not found.");const r="PLACEHOLDER_API_KEY";if(!r)throw alert("CRITICAL ERROR: Gemini API Key missing."),new Error("API Key is missing.");return x=new s({apiKey:r}),!0}catch(e){return console.error(`Failed Gemini initialization in ${t}:`,e),alert(`CRITICAL ERROR: Gemini AI failed to initialize. ${e.message}`),!1}}</script>
+</body>
+</html>
